@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Video Canvas</title>
+  <style>
+    body {
+      display: flex;
+      align-content: center;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .item {
+      margin: 0 10px;
+    }
+  </style>
+</head>
+<body>
+  <video id="myVideo" class="item" controls loop autoplay width="672" height="378" >
+    <source src="video.mp4" type="video/mp4">
+  </video>
+  <canvas id="myCanvas" class="item"></canvas>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+      var video = document.getElementById("myVideo");
+      var canvas = document.getElementById("myCanvas");
+      var context = canvas.getContext("2d");
+
+      canvas.width = video.width;
+      canvas.height = video.height;
+
+      video.addEventListener("play", function() {
+        draw(this, context)
+      }, false)
+    }, false);
+
+    function draw(vid, con) {
+      const wid = vid.width
+      const hei = vid.height
+      con.drawImage(vid, 0, 0, wid, hei)
+
+      var imageData = con.getImageData(0, 0, wid, hei);
+      var threshold = 10;
+      convertEdgeImage(imageData, threshold);
+      con.putImageData(imageData, 0, 0);
+
+      setTimeout(draw, 20, vid, con);
+    }
+
+    function convertEdgeImage(imageData, threshold) {
+      var data = imageData.data;
+      for (var i = 0; i < data.length; i += 4) {
+        data[i] = 255 - data[i];
+        data[i + 1] = 255 - data[i + 1];
+        data[i + 2] = 255 - data[i + 2];
+        data[i + 3] = 255;
+      }
+    }
+  </script>
+</body>
+</html>
